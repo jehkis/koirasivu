@@ -1,76 +1,154 @@
-// 1. Button: show / hide the dog facts table
-const dogButton = document.querySelector("#dogButton");
-const dogTable = document.querySelector("#dogTable");
+// ---------- Exercise 1: click events ----------
+// The first button uses onclick="alert('You clicked me!')" directly in the HTML.
+// The second button calls showTable(), which builds a table with template strings.
 
-dogButton.addEventListener("click", function () {
-    dogTable.hidden = !dogTable.hidden;
-    dogButton.textContent = dogTable.hidden ? "Show dog facts" : "Hide dog facts";
-    dogButton.setAttribute("aria-expanded", String(!dogTable.hidden));
+function showTable() {
+    const animals = [
+        { animal: "Dog",   habitat: "Homes and gardens", diet: "Omnivore" },
+        { animal: "Wolf",  habitat: "Forest",            diet: "Meat" },
+        { animal: "Horse", habitat: "Meadow",            diet: "Plants" }
+    ];
+
+    let rows = "";
+    for (const { animal, habitat, diet } of animals) {
+        rows += `
+            <tr>
+                <td>${animal}</td>
+                <td>${habitat}</td>
+                <td>${diet}</td>
+            </tr>`;
+    }
+
+    const table = `
+        <table id="example" class="display">
+            <thead>
+                <tr>
+                    <th>Animal</th>
+                    <th>Habitat</th>
+                    <th>Diet</th>
+                </tr>
+            </thead>
+            <tbody>${rows}
+            </tbody>
+        </table>`;
+
+    document.querySelector("#tableContainer").innerHTML = table;
+}
+
+// ---------- Exercise 2: listeners and DOM ----------
+const ex1Title = document.querySelector("#ex1Title");
+const ex2Title = document.querySelector("#ex2Title");
+
+ex2Title.addEventListener("mouseover", function () {
+    console.log("Stepped over me with a mouse!");
 });
 
-// 2. Title: click changes text and colour
-const dogTitle = document.querySelector("#dogTitle");
-
-dogTitle.addEventListener("click", function () {
-    dogTitle.classList.toggle("active");
-    dogTitle.textContent = dogTitle.classList.contains("active") ? "Woof! Best friend" : "Dog";
+ex1Title.addEventListener("click", function () {
+    ex1Title.style.color = "red";
+    ex1Title.innerHTML = "Bye bye mouse!";
 });
 
-// 3. Image: mouseover / mouseout
-const dogImage = document.querySelector("#dogImage");
+// ---------- Exercise 3: input events ----------
+const feedback = document.querySelector("#feedback");
+const charcount = document.querySelector("#charcount");
+const statusEl = document.querySelector("#status");
+const preview = document.querySelector("#preview");
+const MAX_LENGTH = 200;
 
-dogImage.addEventListener("mouseover", function () {
-    dogImage.classList.add("hover");
-    console.log("Mouse is over the dog!");
+feedback.addEventListener("focus", function () {
+    statusEl.textContent = "Writing...";
+    feedback.style.backgroundColor = "#fffbe6";
+    feedback.style.borderColor = "var(--grass)";
 });
 
-dogImage.addEventListener("mouseout", function () {
-    dogImage.classList.remove("hover");
+feedback.addEventListener("blur", function () {
+    statusEl.textContent = "";
+    feedback.style.backgroundColor = "";
+    feedback.style.borderColor = "";
 });
 
-// 4. Input: live preview, focus and blur
-const animalInput = document.querySelector("#animalInput");
-const animalPreview = document.querySelector("#animalPreview");
-const animalOutput = document.querySelector("#animalOutput");
-
-animalInput.addEventListener("input", function () {
-    animalPreview.textContent = animalInput.value;
+feedback.addEventListener("input", function () {
+    const length = feedback.value.length;
+    charcount.textContent = `${length}/${MAX_LENGTH}`;
+    charcount.style.color = length > MAX_LENGTH ? "red" : "";
+    preview.textContent = feedback.value || "(Preview appears here)";
 });
 
-animalInput.addEventListener("focus", function () {
-    animalInput.classList.add("focused");
-});
+// ---------- Exercise 4: form submit ----------
+const feedbackForm = document.querySelector("#feedbackForm");
+const formMessage = document.querySelector("#formMessage");
 
-animalInput.addEventListener("blur", function () {
-    animalInput.classList.remove("focused");
-});
-
-// 5. Form: submit with preventDefault and simple validation
-const animalForm = document.querySelector("#animalForm");
-
-animalForm.addEventListener("submit", function (event) {
+feedbackForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const animal = animalInput.value.trim();
+    const text = feedback.value.trim();
 
-    if (animal.length < 2) {
-        animalOutput.textContent = "Please type an animal (at least 2 characters).";
-        animalOutput.classList.add("error");
+    if (text.length < 10 || text.length > MAX_LENGTH) {
+        formMessage.textContent = `Feedback must be 10-${MAX_LENGTH} characters long (now ${text.length}).`;
+        formMessage.classList.add("error");
         return;
     }
 
-    animalOutput.classList.remove("error");
-    animalOutput.textContent = "Your favourite animal is " + animal + ". Mine is the dog!";
-    animalInput.value = "";
-    animalPreview.textContent = "";
+    formMessage.classList.remove("error");
+    formMessage.textContent = "Thank you for your feedback!";
+    feedback.value = "";
+    charcount.textContent = `0/${MAX_LENGTH}`;
+    charcount.style.color = "";
+    preview.textContent = "(Preview appears here)";
 });
 
-// 6. Keyboard: show the last pressed key
+// ---------- Exercise 5: keyboard events ----------
 const keybox = document.querySelector("#keybox");
 const keyinfo = document.querySelector("#keyinfo");
+const keymods = document.querySelector("#keymods");
+const keycount = document.querySelector("#keycount");
+const keyCounts = {};
 
 document.addEventListener("keydown", function (event) {
     console.log(event);
-    keybox.textContent = event.key;
-    keyinfo.textContent = "key: " + event.key + ", code: " + event.code;
+
+    keyinfo.textContent = `Key: ${event.key}, code: ${event.code}`;
+    keybox.textContent = event.key === " " ? "Space" : event.key;
+
+    // Bonus: background colour depends on the key
+    const hue = (event.key.length === 1 ? event.key.toLowerCase().charCodeAt(0) : event.key.length * 37) * 17 % 360;
+    keybox.style.backgroundColor = `hsl(${hue}, 45%, 22%)`;
+
+    // Bonus: how many times this key has been pressed
+    keyCounts[event.code] = (keyCounts[event.code] || 0) + 1;
+    keycount.textContent = `${event.code} pressed ${keyCounts[event.code]} time(s)`;
+
+    // Bonus: Shift, Ctrl and Alt state
+    const mods = [];
+    if (event.shiftKey) mods.push("Shift");
+    if (event.ctrlKey) mods.push("Ctrl");
+    if (event.altKey) mods.push("Alt");
+    keymods.textContent = mods.length ? `Held down: ${mods.join(" + ")}` : "No modifier keys held down";
+});
+
+// ---------- Bonus: Google Maps and geolocation ----------
+const mapBtn = document.querySelector("#mapBtn");
+const mapStatus = document.querySelector("#mapStatus");
+
+mapBtn.addEventListener("click", function () {
+    if (!navigator.geolocation) {
+        mapStatus.textContent = "Geolocation is not supported by this browser.";
+        return;
+    }
+
+    mapStatus.textContent = "Getting your location...";
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            console.log("Latitude:", lat);
+            console.log("Longitude:", lon);
+            const url = `https://www.google.com/maps?q=${lat},${lon}`;
+            window.location.href = url;
+        },
+        (error) => {
+            mapStatus.textContent = "Could not get location: " + error.message;
+        }
+    );
 });

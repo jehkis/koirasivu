@@ -165,12 +165,8 @@
 
         label { font-weight: 600; }
 
-        #animalPreview { color: var(--muted); font-style: italic; min-height: 1.6em; margin-top: 12px; }
-        #animalOutput { font-weight: 600; color: var(--grass-dark); min-height: 1.6em; }
-        #animalOutput.error { color: var(--tongue); }
 
         /* Facts table */
-        #dogTable { margin-top: 16px; }
 
         table {
             width: 100%;
@@ -185,6 +181,47 @@
         th { background: var(--grass); color: #fff; }
         @media (prefers-color-scheme: dark) { th { color: #0f1712; } }
         tbody tr:nth-child(even) { background: var(--grass-light); }
+
+
+        code { background: var(--grass-light); padding: 2px 6px; border-radius: 6px; font-size: 0.9em; }
+        h3 { margin: 16px 0 8px; font-size: 1.05rem; }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+        #tableContainer { margin-top: 16px; }
+
+        textarea {
+            display: block;
+            width: 100%;
+            margin: 8px 0;
+            font: inherit;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--bg);
+            color: var(--text);
+            resize: vertical;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        textarea:focus-visible { outline: 3px solid var(--leash); outline-offset: 2px; }
+
+        .status-row { display: flex; gap: 12px; margin: 4px 0 12px; color: var(--muted); }
+        #status { color: var(--grass-dark); font-weight: 600; }
+
+        #formMessage { margin-top: 12px; font-weight: 600; color: var(--grass-dark); min-height: 1.6em; }
+        #formMessage.error { color: var(--tongue); }
+
+        #preview {
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            min-height: 48px;
+            background: var(--bg);
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        #keybox { transition: background 0.2s ease; }
+        #mapStatus { color: var(--muted); }
 
         /* Key display */
         #keybox {
@@ -222,46 +259,64 @@
         <img id="dogImage" src="img/koira.jpg" alt="Black and white dog lying on the grass">
         <div class="hero-text">
             <span class="eyebrow">My favourite animal</span>
-            <h1 id="dogTitle" title="Click me">Dog</h1>
+            <h1>Dog</h1>
             <p>Hi! I'm Joona, and this is a small page about my favourite animal.</p>
             <p class="muted">The dog is my favourite animal. It's loyal, cheerful, and always ready for an adventure.</p>
-            <p><button id="dogButton" type="button" aria-controls="dogTable" aria-expanded="false">Show dog facts</button></p>
-
-            <div id="dogTable" hidden>
-                <table>
-                    <thead>
-                        <tr><th>Trait</th><th>Description</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Character</td><td>Loyal and cheerful</td></tr>
-                        <tr><td>Favourite activity</td><td>Adventures outdoors</td></tr>
-                        <tr><td>Diet</td><td>Omnivore</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <p class="muted">Below are my JavaScript events exercises (Workshop 3), practised with dog content.</p>
         </div>
     </section>
 
-    <div class="grid-2">
-        <section class="card">
-            <h2>Choose another animal</h2>
-            <form id="animalForm" novalidate>
-                <label for="animalInput">Your favourite animal:</label>
-                <div class="form-row">
-                    <input id="animalInput" type="text" placeholder="Type an animal">
-                    <button type="submit">Submit</button>
-                </div>
-            </form>
-            <p id="animalPreview"></p>
-            <p id="animalOutput" aria-live="polite"></p>
-        </section>
+    <!-- Exercise 1 -->
+    <section class="card">
+        <h2 id="ex1Title">Exercise 1: Click</h2>
+        <p class="muted">Two buttons with <code>onclick</code> events. The second one calls <code>showTable()</code>.</p>
+        <p class="btn-row">
+            <button type="button" onclick="alert('You clicked me!')">Click me</button>
+            <button type="button" onclick="showTable()">Show animal table</button>
+        </p>
+        <div id="tableContainer"></div>
+    </section>
 
-        <section class="card">
-            <h2>Press any key</h2>
-            <div id="keybox">Press any key...</div>
-            <p id="keyinfo"></p>
-        </section>
-    </div>
+    <!-- Exercise 2 -->
+    <section class="card">
+        <h2 id="ex2Title">Exercise 2: Listeners and DOM</h2>
+        <p class="muted">Hover over this heading (see the console) and click the heading of Exercise 1.</p>
+    </section>
+
+    <!-- Exercises 3 and 4 -->
+    <section class="card">
+        <h2>Exercises 3 and 4: Input events and form submit</h2>
+        <h3>Quick feedback form</h3>
+        <form id="feedbackForm" novalidate>
+            <label for="feedback">Feedback about my dog page:</label>
+            <textarea id="feedback" placeholder="Write your feedback..." rows="5"></textarea>
+            <div class="status-row">
+                <span id="charcount">0/200</span>
+                <span id="status" aria-live="polite"></span>
+            </div>
+            <button id="sendBtn" type="submit">Send</button>
+        </form>
+        <p id="formMessage" aria-live="polite"></p>
+        <h3>Preview</h3>
+        <div id="preview">(Preview appears here)</div>
+    </section>
+
+    <!-- Exercise 5 -->
+    <section class="card">
+        <h2>Exercise 5: Keyboard events</h2>
+        <div id="keybox">Press any key...</div>
+        <p id="keyinfo"></p>
+        <p id="keymods" class="muted"></p>
+        <p id="keycount" class="muted"></p>
+    </section>
+
+    <!-- Bonus -->
+    <section class="card">
+        <h2>Bonus: Google Maps and location</h2>
+        <p class="muted">Finds your location with the Geolocation API and opens it in Google Maps (works on HTTPS pages).</p>
+        <p><button type="button" id="mapBtn">Show my location on Google Maps</button></p>
+        <p id="mapStatus" aria-live="polite"></p>
+    </section>
 
     <p style="text-align:center"><a href="https://en.wikipedia.org/wiki/Dog" target="_blank" rel="noopener">Learn more about dogs on Wikipedia</a></p>
 
